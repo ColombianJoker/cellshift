@@ -7,6 +7,10 @@ import duckdb as d
 import pandas as pd
 import polars as pl
 
+tn_prefix="CSTABLE"
+tn_sep="_"
+tn=[] # Table name list
+
 if 'duckdb_verbose' in globals():
   import sys
 
@@ -20,4 +24,8 @@ else:
   cx=d.connect()
   if ('duckdb_verbose' in globals()) and duckdb_verbose:
     print(f"DuckDB connected to default", file=sys.stderr)
-  
+
+# Import modules
+from .fromto import *
+from .auxiliary import *
+from .dropcolumn import *
