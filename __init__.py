@@ -3,6 +3,7 @@
 # Ramón Barrios Láscar
 # 2024-08-09
 
+# Import popular modules
 import duckdb as d
 import pandas as pd
 import polars as pl
@@ -10,9 +11,6 @@ import polars as pl
 tn_prefix="CSTABLE"
 tn_sep="_"
 tn=[] # Table name list
-
-if 'duckdb_verbose' in globals():
-  import sys
 
 if 'duckdb_config' in globals():
   cx=d.connect(
@@ -29,3 +27,4 @@ else:
 from .fromto import *
 from .auxiliary import *
 from .dropcolumn import *
+from .noise import *
