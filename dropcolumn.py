@@ -7,5 +7,6 @@ def drop_column(object, column):
   """
   Returns the object without a column
   """
-  if isinstance(object, dict) and ('n' in object):
-    d.sql(f"ALTER TABLE {object['n']} DROP {column}")
+  if isinstance(object, d.duckdb.DuckDBPyRelation):
+    # Return all columns except the named one
+    return object.project(f"* EXCLUDE {column}")
