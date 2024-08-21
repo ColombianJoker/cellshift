@@ -27,4 +27,6 @@ else:
 from .fromto import *
 from .auxiliary import *
 from .dropcolumn import *
+from .addcolumn import *
+from .replacecolumn import *
 from .noise import *
