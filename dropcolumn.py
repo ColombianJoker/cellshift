@@ -7,6 +7,7 @@ def drop_column(object, column):
   """
   Returns the object without a column
   """
-  if isinstance(object, d.duckdb.DuckDBPyRelation):
+  if isinstance(object, d.duckdb.DuckDBPyRelation) \
+    and isinstance(column,str):
     # Return all columns except the named one
     return object.project(f"* EXCLUDE {column}")
