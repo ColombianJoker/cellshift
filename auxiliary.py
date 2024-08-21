@@ -16,7 +16,12 @@ def table_name(name_list):
 def set_type(object,column,new_type):
   if isinstance(object, d.duckdb.DuckDBPyRelation):
     # Return everything except the named column then the casted named column
-    new_rel=object.project(f"* EXCLUDE {column}, CAST({column} AS {new_type}) AS {column}")
+    # new_rel=object.project(f"* EXCLUDE {column}, CAST({column} AS {new_type}) AS {column}")
+    table_name=next(tn_gen)
+    table=object.to_table(table_name)
+    alter_str=f"ALTER TABLE {table_name} ALTER {column} TYPE {new_type}"
+    d.sql(alter_str)
+    new_rel=d.sql(f"FROM {table_name}")
     return new_rel
 
 def name_generator()->Generator[str, None, None]:
