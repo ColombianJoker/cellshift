@@ -4,6 +4,7 @@ from math import ceil
 # import polars as pl
 # from typing import Generator
 from . import cx, tn, tn_prefix, tn_sep, tn_gen
+from . import add_column, replace_column, drop_column, set_type
 
 def add_integer_range_column(object, basecolumn, new_colname, minvalue=0, maxvalue=None, numranges=None, rangesize=10, onlystart=False):
   """
@@ -69,5 +70,42 @@ def add_age_range_column(object, basecolumn, new_colname, minage=0, maxage=None,
     table=add_integer_range_column(object,basecolumn,new_colname,minvalue=minage,maxvalue=maxage,numranges=numranges,rangesize=agerange,onlystart=onlystart)
     if onlyadults:
       table=table.filter(f"{basecolumn}>={adultage}")
+    return table
+  return object
+
+def integer_range_column(object, column, minvalue=0, maxvalue=None, numranges=None, rangesize=10, onlystart=False):
+  """
+  Replace all values in selected column with range values. column must be numeric, and ranges will be integer only
+  If onlystart==True, it replaces each value with the value at start of corresponding range
+  """
+  if isinstance(object, d.duckdb.DuckDBPyRelation) \
+    and isinstance(column,str):
+    base_column=f"{column}"
+    new_colname=f"{column}_range"
+    table=add_integer_range_column(object,base_column,new_colname, minvalue=minvalue,maxvalue=maxvalue,numranges=numranges,rangesize=rangesize,onlystart=onlystart)
+    if onlystart:
+      table=replace_column(table,base_column,new_colname)
+      table=drop_column(table,new_colname)
+    else:
+      table=drop_column(table,base_column)
+    return table
+  return object
+
+def age_range_column(object, column, minage=0, maxage=None, numranges=None, agerange=10, onlystart=False, onlyadults=True, adultage=18):
+  """
+  Replace all values in selected column with range values. column must be numeric, and ranges will be integer only
+  If onlystart==True, it replaces each value with the value at start of corresponding range.
+  If onlyadults==True, will return only the records with column>=adultage
+  """
+  if isinstance(object, d.duckdb.DuckDBPyRelation) \
+    and isinstance(column,str):
+    base_column=f"{column}"
+    new_colname=f"{column}_range"
+    table=add_age_range_column(object,base_column,new_colname, minage=minage,maxage=maxage,numranges=numranges,agerange=agerange,onlystart=onlystart,onlyadults=onlyadults,adultage=adultage)
+    if onlystart:
+      table=replace_column(table,base_column,new_colname)
+      table=drop_column(table,new_colname)
+    else:
+      table=drop_column(table,base_column)
     return table
   return object

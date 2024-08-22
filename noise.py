@@ -2,7 +2,7 @@ import duckdb as d
 import numpy as np
 # import pandas as pd
 # import polars as pl
-from IPython.display import display
+# from IPython.display import display
 from tqdm import tqdm
 from . import cx, tn, tn_prefix, tn_sep, tn_gen
 from . import add_column, replace_column, drop_column
