@@ -30,3 +30,4 @@ from .dropcolumn import *
 from .addcolumn import *
 from .replacecolumn import *
 from .noise import *
+from .ranges import *

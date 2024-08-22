@@ -10,8 +10,8 @@ from . import add_column, replace_column, drop_column
 
 def add_gaussian_noise_column(object, basecolumn, newcolname=None):
   """
-  Add gaussian noise column to object, base column must be numeric, and newcolname is always
-      of float type
+  Add gaussian noise column to object, basing its values from a preexisting one, base column must
+      be numeric, and newcolname is always of float type
   """
   if isinstance(object, d.duckdb.DuckDBPyRelation) \
     and isinstance(basecolumn,str) \
@@ -25,8 +25,8 @@ def add_gaussian_noise_column(object, basecolumn, newcolname=None):
 
 def add_impulse_noise_column(object, basecolumn, newcolname, samplepct=None, nsamples=None, impulsemag=None, impulsepct=None, verbose=False):
   """
-  Add impulse noise column to object, base column must be numeric, and newcolname is always
-      of float type.
+  Add impulse noise column to object, basing its values from a preexisting one, base column must be
+      numeric, and newcolname is always of float type.
       samplepct: percent of column values to be altered by noise
       nsamples:  absolute number of column values to be alterded by noise
       impulsemag: max of impulse noise to be applied to some column values
@@ -82,8 +82,8 @@ def add_impulse_noise_column(object, basecolumn, newcolname, samplepct=None, nsa
     
 def add_salt_pepper_noise_column(object, basecolumn, newcolname, samplepct=None, nsamples=None, verbose=False):
   """
-  Add salt & pepper noise column to object, base column must be numeric, and newcolname is always
-      of float type.
+  Add salt & pepper noise column to object, basing its values from a preexisting one, base column
+      must be numeric, and newcolname is always of float type.
       samplepct: percent of column values to be altered by noise
       nsamples:  absolute number of column values to be alterded by noise
   """
