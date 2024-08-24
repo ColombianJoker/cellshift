@@ -5,7 +5,7 @@ from math import ceil, floor
 # from typing import Generator
 from . import cx, tn, tn_prefix, tn_sep, tn_gen
 from . import add_column, replace_column, drop_column, set_type
-from IPython.display import display
+# from IPython.display import display
 
 def add_integer_range_column(object, basecolumn, new_colname, minvalue=0, maxvalue=None, numranges=None, rangesize=10, onlystart=False):
   """

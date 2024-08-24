@@ -31,3 +31,4 @@ from .addcolumn import *
 from .replacecolumn import *
 from .noise import *
 from .ranges import *
+from .masks import *
