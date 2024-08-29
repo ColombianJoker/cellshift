@@ -166,7 +166,7 @@ def float_range_column(object, column, minvalue=0, maxvalue=0, numranges=None, r
     and isinstance(column,str):
     base_column=f"{column}"
     new_colname=f"{column}_range"
-    table=add_float_range_column(object,base_column,new_colname, minvalue=minvalue,maxvalue=maxvalue,numranges=numranges,rangesize=rangesize, onlystart=onlystart)
+    table=add_float_range_column(object,base_column,new_colname, minvalue=minvalue,maxvalue=maxvalue,numranges=numranges,rangesize=rangesize, decimals=decimals, onlystart=onlystart)
     if onlystart:
       table=replace_column(table,base_column,new_colname)
       table=drop_column(table,new_colname)
