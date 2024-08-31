@@ -1,8 +1,5 @@
 import duckdb as d
 import numpy as np
-# import pandas as pd
-# import polars as pl
-# from IPython.display import display
 from tqdm import tqdm
 from . import cx, tn, tn_prefix, tn_sep, tn_gen
 from . import add_column, replace_column, drop_column
@@ -135,7 +132,7 @@ def gaussian_column(object, column):
   """
   if isinstance(object, d.duckdb.DuckDBPyRelation) \
     and isinstance(column,str):
-    base_column=f"{column}"
+    # base_column=f"{column}"
     new_colname=f"noised_{column}"
     table=add_gaussian_noise_column(object,column,new_colname)
     table=replace_column(table,column,new_colname)
@@ -151,7 +148,7 @@ def impulse_column(object, column, samplepct=None, nsamples=None, impulsemag=Non
   """
   if isinstance(object, d.duckdb.DuckDBPyRelation) \
     and isinstance(column,str):
-    base_column=f"{column}"
+    # base_column=f"{column}"
     new_colname=f"noised_{column}"
     # display(d.sql(f"SELECT AVG({column}) AS AVG_{column}, STDDEV_POP({column}) AS DEV FROM object"))
     table=add_impulse_noise_column(object,column,new_colname,impulsepct=impulsepct,samplepct=samplepct,verbose=verbose)
@@ -172,7 +169,7 @@ def salt_pepper_column(object, column, samplepct=None, nsamples=None, verbose=Fa
   """
   if isinstance(object, d.duckdb.DuckDBPyRelation) \
     and isinstance(column,str):
-    base_column=f"{column}"
+    # base_column=f"{column}"
     new_colname=f"noised_{column}"
     # display(d.sql(f"SELECT AVG({column}) AS AVG_{column}, STDDEV_POP({column}) AS DEV FROM object"))
     table=add_salt_pepper_noise_column(object,column,new_colname,samplepct=samplepct,verbose=verbose)

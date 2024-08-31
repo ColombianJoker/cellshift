@@ -1,6 +1,4 @@
 import duckdb as d
-# import pandas as pd
-# import polars as pl
 from . import cx
 
 def drop_column(object, column):

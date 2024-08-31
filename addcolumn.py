@@ -1,30 +1,28 @@
 import duckdb as d
 import pandas as pd
 import numpy as np
-# import polars as pl
-# from typing import Generator
 from . import cx, tn, tn_prefix, tn_sep, tn_gen
 
-def add_column(relobject, colobject, colname=None):
+def add_column(object, columndata, newcolname=None):
   """
-  Add colobject as a new table column to relobject, using colname as the name of the new
+  Add columndata as a new table column to object, using newcolname as the name of the new
   column
   """
-  if isinstance(relobject, d.duckdb.DuckDBPyRelation) and \
-    isinstance(colobject, pd.core.frame.DataFrame):
+  if isinstance(object, d.duckdb.DuckDBPyRelation) and \
+    isinstance(columndata, pd.core.frame.DataFrame):
     # Generate new names for objects as tables
     new_rel=next(tn_gen)
     new_pd=next(tn_gen)
     # Register objects as tables
-    d.register(new_rel, relobject)
-    d.register(new_pd, colobject)
-    if colname:
-      return d.sql(f"SELECT {new_rel}.*, {new_pd}.* AS {colname} FROM {new_rel} POSITIONAL JOIN {new_pd}")
+    d.register(new_rel, object)
+    d.register(new_pd, columndata)
+    if newcolname:
+      return d.sql(f"SELECT {new_rel}.*, {new_pd}.* AS {newcolname} FROM {new_rel} POSITIONAL JOIN {new_pd}")
     else:
       return d.sql(f"SELECT {new_rel}.*, {new_pd}.* FROM {new_rel} POSITIONAL JOIN {new_pd}")
-  if isinstance(relobject, d.duckdb.DuckDBPyRelation) and \
-    isinstance(colobject, np.ndarray):
-    if colobject.ndim<2 or (colobject.ndim==2 and ((colobject.shape[0]==1) or (colobject.shape[1]==1))):
-      return d.sql(f"SELECT relobject.*, colobject.* AS {colname} FROM relobject POSITIONAL JOIN colobject")
+  if isinstance(object, d.duckdb.DuckDBPyRelation) and \
+    isinstance(columndata, np.ndarray):
+    if columndata.ndim<2 or (columndata.ndim==2 and ((columndata.shape[0]==1) or (columndata.shape[1]==1))):
+      return d.sql(f"SELECT object.*, columndata.* AS {newcolname} FROM object POSITIONAL JOIN columndata")
     else:
-      return d.sql(f"SELECT relobject.*, colobject.* FROM relobject POSITIONAL JOIN colobject")
+      return d.sql(f"SELECT object.*, columndata.* FROM object POSITIONAL JOIN columndata")
