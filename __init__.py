@@ -32,3 +32,4 @@ from .replacecolumn import *
 from .noise import *
 from .ranges import *
 from .masks import *
+from .synthetic import *

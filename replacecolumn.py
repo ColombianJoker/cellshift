@@ -1,7 +1,4 @@
 import duckdb as d
-# import pandas as pd
-# import polars as pl
-# from typing import Generator
 from . import cx, tn, tn_prefix, tn_sep, tn_gen
 
 def replace_column(relobject, coltoreplace, replacingcol):

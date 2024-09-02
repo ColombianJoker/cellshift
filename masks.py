@@ -1,9 +1,5 @@
 import duckdb as d
 from duckdb.typing import *
-# from math import ceil, floor
-# import pandas as pd
-# import polars as pl
-# from typing import Generator
 from . import cx, tn, tn_prefix, tn_sep, tn_gen
 from . import add_column, replace_column, drop_column, set_type
 import random
