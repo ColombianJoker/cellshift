@@ -114,6 +114,67 @@ def add_syn_city_column(object, basecolumn=None, newcolname=None, maxuniques=100
       return object
   return object
 
+def add_syn_name_column(object, basecolumn=None, newcolname=None, maxuniques=1000, verbose=False):
+  """
+  Add a newcolname VARCHAR column with people full names. If basecolum is valid (is a column of the
+  object) and the unique number of names in it are max maxunique. If the number of unique is greater
+  than maxunique, it will only generate names without trying to maintain an equivalence.
+  """
+  if isinstance(object, d.duckdb.DuckDBPyRelation) \
+    and isinstance(newcolname, str):
+      if "fake" in globals():
+        global fake
+      else:
+        if "locale" in globals():
+          global locale
+        else:
+          locale="es_CO"
+        fake=Faker(locale)
+        Faker.seed(42)
+      if isinstance(basecolumn,str):
+        # Get unique names in basecolumn
+        table_name=next(tn_gen)
+        table=object.to_table(table_name)
+        n_uniques=d.sql(f"SELECT COUNT(DISTINCT {basecolumn}) FROM {table_name}").fetchall()[0][0]
+        if n_uniques>maxuniques:
+          # Generate without equivalences
+          d.sql(f"ALTER TABLE {table_name} ADD COLUMN {newcolname} VARCHAR")
+          all_count=d.sql(f"SELECT COUNT(*) FROM {table_name}").fetchall()[0][0]
+          for row_id in tqdm(range(all_count), disable=not verbose):
+            fake_name=fake.name()
+            d.sql(f"UPDATE {table_name} SET {newcolname}='{fake_name}' WHERE rowid=={row_id}")
+        else:
+          # Generate with equivalences
+          # Create table of equivalences
+          equiv_table=next(tn_gen)
+          d.sql(f"CREATE TABLE {equiv_table} ({basecolumn} VARCHAR, {newcolname} VARCHAR UNIQUE)")
+          d.sql(f"INSERT INTO {equiv_table} ({basecolumn}) SELECT DISTINCT {basecolumn} FROM {table_name}")
+          with tqdm(total=n_uniques, ) as progress:
+            row_id=0
+            while row_id<n_uniques:
+              fake_name=fake.name()
+              try:
+                d.sql(f"UPDATE {equiv_table} SET {newcolname}='{fake_name}' WHERE rowid=={row_id}")
+                row_id+=1
+                progress.update(1)
+              except d.duckdb.Error as e:
+                pass
+          return d.sql(f"SELECT COLUMNS({table_name}.*), {equiv_table}.{newcolname} AS {newcolname} FROM {table_name}, {equiv_table} WHERE {table_name}.{basecolumn}=={equiv_table}.{basecolumn}")
+        table=d.sql(f"FROM {table_name}")
+        return table
+      else:
+        table_name=next(tn_gen)
+        table=object.to_table(table_name)
+        d.sql(f"ALTER TABLE {table_name} ADD COLUMN {newcolname} VARCHAR")
+        all_count=d.sql(f"SELECT COUNT(*) FROM {table_name}").fetchall()[0][0]
+        for row_id in tqdm(range(all_count), disable=not verbose):
+          fake_name=fake.name()
+          d.sql(f"UPDATE {table_name} SET {newcolname}='{fake_name}' WHERE rowid=={row_id}")
+        table=d.sql(f"FROM {table_name}")
+        return table
+      return object
+  return object
+
 def syn_date_column(object, basecolumn, usebasecolumn=False, startdate=None, enddate=None, dateformat="%Y-%m-%d", verbose=False):
   """
   Replace all date values in basecolumn of object with synthetic generated dates. If startdate and 
@@ -166,5 +227,33 @@ def syn_city_column(object, basecolumn=None, maxuniques=1000, verbose=False):
     rel=add_syn_city_column(object, basecolumn=basecolumn, newcolname=new_colname, maxuniques=maxuniques, verbose=verbose)
     table_name=next(tn_gen)
     table=rel.to_table(table_name)
-    return d.sql(f"SELECT * EXCLUDE ({basecolumn},{new_colname}), {new_colname} AS {basecolumn} FROM {table_name}")
+    d.sql(f"UPDATE {table_name} SET {basecolumn}={new_colname}")
+    return d.sql(f"SELECT * EXCLUDE ({new_colname}) FROM {table_name}")
+  return object
+
+def syn_name_column(object, basecolumn=None, maxuniques=1000, verbose=False):
+  """
+  Replace all people name values in basecolumn of object with random generated towns. User must check
+  documentation of Faker python module because it generates real names using the country location
+  and it only can generate a limited number of names.
+  If the unique number of values in basecolumn is less or equal than maxuniques, it can replace
+  each unique value in source with unique values in replacement.
+  """
+  if isinstance(object, d.duckdb.DuckDBPyRelation) \
+  and isinstance(basecolumn, str):
+    if "fake" in globals():
+      global fake
+    else:
+      if "locale" in globals():
+        global locale
+      else:
+        locale="es_CO"
+      fake=Faker(locale)
+      Faker.seed(42)
+    new_colname=f"{basecolumn}_generated"
+    rel=add_syn_name_column(object, basecolumn=basecolumn, newcolname=new_colname, maxuniques=maxuniques, verbose=verbose)
+    table_name=next(tn_gen)
+    table=rel.to_table(table_name)
+    d.sql(f"UPDATE {table_name} SET {basecolumn}={new_colname}")
+    return d.sql(f"SELECT * EXCLUDE ({new_colname}) FROM {table_name}")
   return object
