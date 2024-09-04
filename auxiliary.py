@@ -3,6 +3,8 @@ import re
 import duckdb as d
 import pandas as pd
 import numpy as np
+import math, string, random
+
 from typing import Generator
 from . import cx, tn, tn_prefix, tn_sep
 
@@ -32,5 +34,21 @@ def name_generator()->Generator[str, None, None]:
   while True:
     yield f"{tn_prefix}{tn_sep}{seq}"
     seq+=1
+
+def letters_for(n_digits):
+  """
+  Return the minimun numbers of latin (capital) letters needed to represent a number of n digits
+  """
+  LETTERS=26
+  log_10=math.log10(LETTERS)
+  n_letters=math.ceil(n_digits/log_10) # round up
+  return n_letters
+
+def random_code(n_letters):
+  """
+  Return a "code" of n random capital letters
+  """
+  return "".join(random.choices(string.ascii_uppercase, k=n_letters))
+
 
 tn_gen=name_generator()

@@ -1,11 +1,10 @@
 import duckdb as d
 # from duckdb.typing import *
-from . import cx, tn, tn_prefix, tn_sep, tn_gen
+from . import cx, tn, tn_prefix, tn_sep, tn_gen, random_code, letters_for
 from . import add_column, replace_column, drop_column, set_type
 from faker import Faker
 from datetime import datetime
 from tqdm import tqdm
-import math, string, random
 
 def add_syn_date_column(object, basecolumn=None, newcolname=None, startdate=None, enddate=None, dateformat="%Y-%m-%d", verbose=False):
   """
@@ -298,21 +297,6 @@ def add_syn_first_name_column(object, basecolumn=None, newcolname=None, maxuniqu
     return object
   return object
 
-def letters_for(n_digits):
-  """
-  Return the minimun numbers of latin (capital) letters needed to represent a number of n digits
-  """
-  LETTERS=26
-  log_10=math.log10(LETTERS)
-  n_letters=math.ceil(n_digits/log_10) # round up
-  return n_letters
-
-def random_code(n_letters):
-  """
-  Return a "code" of n random capital letters
-  """
-  return "".join(random.choices(string.ascii_uppercase, k=n_letters))
-
 def add_syn_class_column(object, basecolumn=None, newcolname=None, maxuniques=1000, verbose=False):
   """
   Add a newcolname char column with equal-length LETTER classes. If basecolum is valid (is a column
@@ -351,7 +335,7 @@ def add_syn_class_column(object, basecolumn=None, newcolname=None, maxuniques=10
         n_letters=letters_for(len(str(n_uniques)))
         d.sql(f"CREATE TABLE {equiv_table} ({basecolumn} VARCHAR, {newcolname} VARCHAR UNIQUE)")
         d.sql(f"INSERT INTO {equiv_table} ({basecolumn}) SELECT DISTINCT {basecolumn} FROM {table_name}")
-        with tqdm(total=n_uniques, ) as progress:
+        with tqdm(total=n_uniques, disable=not verbose) as progress:
           row_id=0
           while row_id<n_uniques:
             fake_code=random_code(n_letters)
